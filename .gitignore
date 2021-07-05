@@ -1,2 +1,4 @@
-/debug
-/.ccls-cache
+/debug/
+/.ccls-cache/
+
+/compile_commands.json

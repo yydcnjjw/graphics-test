@@ -1,5 +1,5 @@
-int main(int argc, char *argv[])
-{
-  
-  return 0;
+#include <app.hpp>
+
+int main(int argc, char *argv[]) {
+  return my::App{}.run();
 }
