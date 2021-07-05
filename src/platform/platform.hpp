@@ -6,6 +6,7 @@ namespace my {
 namespace platform {
 
 using Window = glfw::Window;
+using Context = glfw::Context;
 
 } // namespace platform
 

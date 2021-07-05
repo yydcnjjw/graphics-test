@@ -1,6 +1,6 @@
 #pragma once
 
-#include <type.hpp>
+#include <window/event_type.hpp>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -44,14 +44,9 @@ private:
   }
 };
 
-struct Size {
-  int width;
-  int height;
-};
-
 class Window : private boost::noncopyable {
 public:
-  using handle_type = GLFWwindow *;
+  using handle_t = GLFWwindow *;
 
   template <typename... Args> Window(Args &&...args) {
     _handle = glfwCreateWindow(std::forward<Args>(args)...);
@@ -61,6 +56,7 @@ public:
 
     glfwSetWindowUserPointer(*this, this);
     glfwSetFramebufferSizeCallback(*this, &Window::framebuffer_size_cb);
+    glfwSetKeyCallback(*this, &Window::key_cb);
   }
 
   ~Window() { glfwDestroyWindow(_handle); }
@@ -71,24 +67,37 @@ public:
 
   void make_glctx() { glfwMakeContextCurrent(*this); }
 
-  operator handle_type() { return _handle; }
+  operator handle_t() { return _handle; }
+
+  template <typename EventType> auto event() {
+    return on_event<EventType>(_subject.get_observable());
+  }
 
 private:
-  handle_type _handle;
+  handle_t _handle;
+  rx::subjects::subject<dynamic_event_t> _subject;
 
-  template <typename EventType, typename... Args>
-  void post_event(Args &&...args) {}
+  template <typename EventType, typename... Args> void post(Args &&...args) {
+    post_event<EventType>(_subject.get_subscriber(),
+                          std::forward<Args>(args)...);
+  }
 
-  static Window *user_pointer(handle_type handle) {
+  static Window *user_pointer(handle_t handle) {
     return reinterpret_cast<Window *>(glfwGetWindowUserPointer(handle));
   }
 
   template <typename EventType, typename... Args>
-  static void post_event(handle_type handle, Args &&...args) {
-    user_pointer(handle)->post_event<EventType>(std::forward<Args>(args)...);
+  static void post(handle_t handle, Args &&...args) {
+    user_pointer(handle)->post<EventType>(std::forward<Args>(args)...);
   }
 
-  static void framebuffer_size_cb(handle_type handle, int w, int h) {}
+  static void framebuffer_size_cb(handle_t handle, int w, int h) {
+    post<ev::FramebufferSize>(handle, w, h);
+  }
+  static void key_cb(handle_t handle, int key, int scancode, int action,
+                     int mods) {
+    post<ev::Key>(handle, key, scancode, action, mods);
+  }
 };
 
 } // namespace glfw
