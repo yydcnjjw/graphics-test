@@ -14,7 +14,7 @@ public:
   enum class Usage : GLenum { kStaticDraw = GL_STATIC_DRAW };
 
   Buffer(Target target, Usage usage, void *data, std::size_t size)
-      : Object(gen_buffers()), _target(target) {
+      : Object(gen_buffer()), _target(target) {
 
     glBindBuffer(static_cast<GLenum>(target), *this);
 
@@ -30,7 +30,7 @@ public:
 private:
   Target _target;
 
-  static handle_t gen_buffers() {
+  static handle_t gen_buffer() {
     GLuint o;
     glGenBuffers(1, &o);
     return o;

@@ -60,30 +60,32 @@ void main()
 )"}}});
     program.link();
 
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-
-    glBindVertexArray(VAO);
-
-    float vertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f,
-                        0.0f,  0.0f,  0.5f, 0.0f};
+    auto vertices = new std::array<float, 9>{-0.5f, -0.5f, 0.0f, 0.5f, -0.5f,
+                                     0.0f,  0.0f,  0.5f, 0.0f};
 
     gl::Buffer buf(gl::Buffer::Target::kArray, gl::Buffer::Usage::kStaticDraw,
-                   vertices, sizeof(vertices));
+                   vertices->data(), vertices->size() * sizeof(float));
+    
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-                          (void *)0);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
+    delete vertices;
+    gl::VertexArray va;
+    va.map([]() {
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                            (void *)0);
+      glEnableVertexAttribArray(0);
+    });
+
+    
 
     while (!win.should_close()) {
 
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      program.use();
-      glBindVertexArray(VAO);
-      glDrawArrays(GL_TRIANGLES, 0, 3);
+      va.map([&]() {
+        program.use();
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+      });
 
       win.swapbuffer();
       ctx.poll_events();
