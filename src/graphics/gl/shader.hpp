@@ -1,6 +1,7 @@
 #pragma once
 
 #include <graphics/gl/object.hpp>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -24,7 +25,16 @@ public:
 
   ~Shader() { glDeleteShader(*this); }
 
-  void compile() { glCompileShader(*this); }
+  void compile() {
+    glCompileShader(*this);
+    int result;
+    glGetShaderiv(*this, GL_COMPILE_STATUS, &result);
+    std::string buf(512, 0);
+    if (!result) {
+      glGetShaderInfoLog(*this, buf.size(), nullptr, buf.data());
+      throw std::runtime_error(buf);
+    }
+  }
 
 private:
   Type _type;
