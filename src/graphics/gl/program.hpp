@@ -10,14 +10,14 @@ class Program : public Object {
 public:
   Program() : Object(glCreateProgram()) {}
 
-  void attach_shaders(std::initializer_list<Shader> lst) {
-    for (auto const &o : lst) {
-      glAttachShader(*this, o);
-    }
-  }
-
   void link() { glLinkProgram(*this); }
   void use() { glUseProgram(*this); }
+
+  template <typename... Shader> void attach_shaders(Shader &&...shader) {
+    for (auto o : {std::ref(shader)...}) {
+      glAttachShader(*this, o.get());
+    }
+  }
 
   ~Program() { glDeleteProgram(*this); }
 };

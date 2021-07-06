@@ -18,12 +18,6 @@ public:
 
   void bind() { glBindVertexArray(*this); }
 
-  template <typename CallBack> void map(CallBack &&cb) {
-    bind();
-    cb();
-    unbind();
-  }
-
   void unbind() { glBindVertexArray(0); }
 
 private:

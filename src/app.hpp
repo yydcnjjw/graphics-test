@@ -40,7 +40,7 @@ public:
     namespace gl = graphics::gl;
 
     gl::Program program;
-    program.attach_shaders({gl::Shader{gl::Shader::Type::kVertex, {R"(
+    program.attach_shaders(gl::Shader{gl::Shader::Type::kVertex, {R"(
 #version 330 core
 layout (location = 0) in vec3 aPos;
 
@@ -49,7 +49,7 @@ void main()
     gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
 }
 )"}},
-                            gl::Shader{gl::Shader::Type::kFragment, {R"(
+                           gl::Shader{gl::Shader::Type::kFragment, {R"(
 #version 330 core
 out vec4 FragColor;
 
@@ -57,35 +57,41 @@ void main()
 {
     FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
 }
-)"}}});
+)"}});
     program.link();
 
-    auto vertices = new std::array<float, 9>{-0.5f, -0.5f, 0.0f, 0.5f, -0.5f,
-                                     0.0f,  0.0f,  0.5f, 0.0f};
+    float vertices[] = {0.5f,  0.5f,  0.0f, 0.5f,  -0.5f, 0.0f,
+                        -0.5f, -0.5f, 0.0f, -0.5f, 0.5f,  0.0f};
 
-    gl::Buffer buf(gl::Buffer::Target::kArray, gl::Buffer::Usage::kStaticDraw,
-                   vertices->data(), vertices->size() * sizeof(float));
-    
+    unsigned int indices[] = {0, 1, 3, 1, 2, 3};
 
-    delete vertices;
+    gl::Buffer vb(gl::Buffer::Target::kArray, gl::Buffer::Usage::kStaticDraw,
+                  vertices, sizeof(vertices));
+    gl::Buffer eb(gl::Buffer::Target::kElementArray,
+                  gl::Buffer::Usage::kStaticDraw, indices, sizeof(indices));
+
     gl::VertexArray va;
-    va.map([]() {
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-                            (void *)0);
-      glEnableVertexAttribArray(0);
-    });
-
-    
+    omap(
+        [&]() {
+          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                                (void *)0);
+          glEnableVertexAttribArray(0);
+        },
+        va, vb);
 
     while (!win.should_close()) {
 
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      va.map([&]() {
-        program.use();
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-      });
+      program.use();
+
+      omap(
+          [&]() {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+          },
+          va, eb);
 
       win.swapbuffer();
       ctx.poll_events();
