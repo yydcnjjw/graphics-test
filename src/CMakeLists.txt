@@ -13,10 +13,12 @@ target_link_libraries(graphics-test
   glfw
   glad
   spdlog::spdlog
+  assimp
   )
 
 target_include_directories(graphics-test
   SYSTEM
   PRIVATE
   ${RXCPP_INCLUDE_PATH}
+  ${STB_INCLUDE_PATH}
   )

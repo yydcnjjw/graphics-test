@@ -1,3 +1,9 @@
 [submodule "vendor/RxCpp"]
 	path = vendor/RxCpp
 	url = https://github.com/ReactiveX/RxCpp.git
+[submodule "vendor/assimp"]
+	path = vendor/assimp
+	url = https://github.com/assimp/assimp.git
+[submodule "vendor/stb"]
+	path = vendor/stb
+	url = https://github.com/nothings/stb.git

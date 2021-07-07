@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/noncopyable.hpp>
+#include <core/config.hpp>
 #include <functional>
 #include <glad/gl.h>
 #include <tuple>
@@ -23,14 +24,19 @@ struct Object : private boost::noncopyable {
 
   Object(handle_t handle) : _handle(handle) {}
 
+  virtual void bind() {}
+  virtual void unbind() {}
+
   operator handle_t() const { return _handle; }
 
 private:
   handle_t _handle;
 };
 
-template <typename Callback, typename... Object>
-inline void omap(Callback &&cb, Object &&...o) {
+template <typename Callback, typename... _Object,
+          typename = std::enable_if_t<std::conjunction_v<
+              std::is_base_of<Object, std::decay_t<_Object>>...>>>
+inline void omap(Callback &&cb, _Object &&...o) {
 
   auto tuple = std::make_tuple(std::ref(o)...);
   boost::fusion::for_each(tuple, [](auto &o) { o.bind(); });

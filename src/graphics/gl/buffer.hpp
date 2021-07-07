@@ -19,12 +19,12 @@ public:
   Buffer(Target target, Usage usage, void *data, std::size_t size)
       : Object(gen_buffer()), _target(target) {
 
-    omap(
-        [&]() {
-          glBufferData(static_cast<GLenum>(target), size, data,
-                       static_cast<GLenum>(usage));
-        },
-        *this);
+    omap([=, this]() { set_data(usage, data, size); }, *this);
+  }
+
+  void set_data(Usage usage, void *data, std::size_t size) {
+    glBufferData(static_cast<GLenum>(_target), size, data,
+                 static_cast<GLenum>(usage));
   }
 
   void bind() { glBindBuffer(static_cast<GLenum>(_target), *this); }
