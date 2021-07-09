@@ -3,6 +3,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(Vulkan REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 
 add_executable(graphics-test main.cc)
@@ -12,8 +13,9 @@ target_link_libraries(graphics-test
   Vulkan::Vulkan
   glfw
   glad
-  spdlog::spdlog
+  glm
   assimp
+  spdlog::spdlog
   )
 
 target_include_directories(graphics-test

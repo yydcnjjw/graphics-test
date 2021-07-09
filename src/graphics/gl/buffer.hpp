@@ -19,7 +19,7 @@ public:
   Buffer(Target target, Usage usage, void *data, std::size_t size)
       : Object(gen_buffer()), _target(target) {
 
-    omap([=, this]() { set_data(usage, data, size); }, *this);
+    omap([=, this] { set_data(usage, data, size); }, *this);
   }
 
   void set_data(Usage usage, void *data, std::size_t size) {

@@ -1,12 +1,14 @@
 #pragma once
 
 #include <core/type.hpp>
-#include <glad/gl.h>
 #include <graphics/gl/gl.hpp>
 #include <platform/platform.hpp>
-
-#include <stb_image.h>
 #include <window/window.hpp>
+
+#include <glad/gl.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <stb_image.h>
 
 namespace my {
 
@@ -65,86 +67,157 @@ public:
     program.attach(gl::Shader{gl::Shader::Type::kVertex, {R"(
 #version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aColor;
-layout (location = 2) in vec2 aTexCoord;
+layout (location = 1) in vec2 aTexCoord;
 
-out vec3 ourColor;
 out vec2 TexCoord;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 void main()
 {
-    gl_Position = vec4(aPos, 1.0);
-    ourColor = aColor;
-    TexCoord = aTexCoord;
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }
 )"}},
                    gl::Shader{gl::Shader::Type::kFragment, {R"(
 #version 330 core
 out vec4 FragColor;
 
-in vec3 ourColor;
 in vec2 TexCoord;
 
-uniform sampler2D ourTexture;
+// texture samplers
+uniform sampler2D texture1;
+uniform sampler2D texture2;
 
 void main()
 {
-    FragColor = texture(ourTexture, TexCoord);
+	// linearly interpolate between both textures (80% container, 20% awesomeface)
+	FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.2);
 }
 )"}});
     program.link();
 
     float vertices[] = {
-        //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-        0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // 右上
-        0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // 右下
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // 左下
-        -0.5f, 0.5f,  0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // 左上
-    };
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.5f,  -0.5f, -0.5f, 1.0f, 0.0f,
+        0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,
+        -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
 
-    unsigned int indices[] = {0, 1, 3, 1, 2, 3};
+        -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, 0.5f,  -0.5f, 0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f, 0.5f,  0.5f,  0.0f, 1.0f, -0.5f, -0.5f, 0.5f,  0.0f, 0.0f,
+
+        -0.5f, 0.5f,  0.5f,  1.0f, 0.0f, -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, -0.5f, 0.5f,  0.5f,  1.0f, 0.0f,
+
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,
+        0.5f,  -0.5f, -0.5f, 0.0f, 1.0f, 0.5f,  -0.5f, -0.5f, 0.0f, 1.0f,
+        0.5f,  -0.5f, 0.5f,  0.0f, 0.0f, 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.5f,  -0.5f, -0.5f, 1.0f, 1.0f,
+        0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, 0.5f,  -0.5f, 0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+        -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, 0.5f,  0.5f,  -0.5f, 1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, 0.5f,  0.5f,  0.0f, 0.0f, -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f};
+
+    glm::vec3 cubePositions[] = {
+        glm::vec3(0.0f, 0.0f, 0.0f),    glm::vec3(2.0f, 5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f), glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),  glm::vec3(-1.7f, 3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),  glm::vec3(1.5f, 2.0f, -2.5f),
+        glm::vec3(1.5f, 0.2f, -1.5f),   glm::vec3(-1.3f, 1.0f, -1.5f)};
 
     gl::Buffer vb(gl::Buffer::Target::kArray, gl::Buffer::Usage::kStaticDraw,
                   vertices, sizeof(vertices));
-    gl::Buffer eb(gl::Buffer::Target::kElementArray,
-                  gl::Buffer::Usage::kStaticDraw, indices, sizeof(indices));
+    // gl::Buffer eb(gl::Buffer::Target::kElementArray,
+    //               gl::Buffer::Usage::kStaticDraw, indices, sizeof(indices));
 
     gl::VertexArray va;
     omap(
-        [&]() {
+        [&] {
           // position attribute
-          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                                 (void *)0);
           glEnableVertexAttribArray(0);
-          // color attribute
-          glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+          // texture coord attribute
+          glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                                 (void *)(3 * sizeof(float)));
           glEnableVertexAttribArray(1);
-          // texture coord attribute
-          glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-                                (void *)(6 * sizeof(float)));
-          glEnableVertexAttribArray(2);
         },
         va, vb);
 
-    gl::Texture tex{gl::Texture::Target::k2D};
+    stbi_set_flip_vertically_on_load(true);
+    gl::Texture tex0{gl::Texture::Target::k2D};
     omap(
-        [&]() {
-          auto image = ImageLoader::load("container.jpg");
-          tex.load_image(0, GL_RGB, image.width, image.height, 0, GL_RGB,
-                         GL_UNSIGNED_BYTE, image.data);
+        [&] {
+          auto image = ImageLoader::load("assets/container.jpg");
+          tex0.load_image(0, GL_RGB, image.width, image.height, 0, GL_RGB,
+                          GL_UNSIGNED_BYTE, image.data);
         },
-        tex);
+        tex0);
+    gl::Texture tex1{gl::Texture::Target::k2D};
+    omap(
+        [&] {
+          auto image = ImageLoader::load("assets/awesomeface.png");
+          tex1.load_image(0, GL_RGBA, image.width, image.height, 0, GL_RGBA,
+                          GL_UNSIGNED_BYTE, image.data);
+        },
+        tex1);
 
     glViewport(0, 0, 800, 600);
+
+    glm::mat4 model{1.0};
+    model =
+        glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::mat4 view{1.0};
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    auto projection =
+        glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+    win.event<ev::FramebufferSize>().subscribe([&projection](auto e) {
+      // projection = glm::perspective(glm::radians(45.0f),
+      //                               static_cast<float>(e->width / e->height),
+      //                               0.1f, 100.0f);
+      SPDLOG_DEBUG("projection: {}", glm::to_string(projection));
+    });
+
+    glEnable(GL_DEPTH_TEST);
 
     while (!win.should_close()) {
 
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-      glClear(GL_COLOR_BUFFER_BIT);
 
-      omap([&]() { glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); },
-           program, va, eb, tex);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      omap(
+          [&] {
+            program.uniform("texture1", 0);
+            program.uniform("texture2", 1);
+
+            for (unsigned int i = 0; i < 10; i++) {
+              // calculate the model matrix for each object and pass it to
+              // shader before drawing
+              glm::mat4 model{1.0};
+              model = glm::translate(model, cubePositions[i]);
+              float angle = 20.0f * i;
+              model = glm::rotate(model, glm::radians(angle),
+                                  glm::vec3(1.0f, 0.3f, 0.5f));
+
+              program.uniform("model", model);
+              program.uniform("view", view);
+              program.uniform("projection", projection);
+
+              glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+          },
+          program, va, tex0[0], tex1[1]);
 
       win.swapbuffer();
       ctx.poll_events();

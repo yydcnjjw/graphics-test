@@ -25,9 +25,20 @@ public:
 
   Texture(Target target) : Object(gen_texture()), _target(target) {}
 
-  void bind() { glBindTexture(static_cast<GLenum>(_target), *this); }
+  void bind() {
+    if (_index != -1) {
+      active_texture(_index);
+    }
+    glBindTexture(static_cast<GLenum>(_target), *this);
+  }
 
   void unbind() { glBindTexture(static_cast<GLenum>(_target), 0); }
+
+  Texture &operator[](int n) {
+    assert(n >= 0);
+    _index = n;
+    return *this;
+  }
 
   void min_filter(FilterType type) {
     tex_parameter(GL_TEXTURE_MIN_FILTER, static_cast<GLint>(type));
@@ -60,11 +71,16 @@ public:
 
 private:
   Target _target;
+  int _index{-1};
 
   static handle_t gen_texture() {
     GLuint o;
     glGenTextures(1, &o);
     return o;
+  }
+
+  static void active_texture(int n) {
+    glActiveTexture(GL_TEXTURE0 + n);
   }
 
   void tex_parameter(GLenum name, GLint v) {
