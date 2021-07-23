@@ -1,9 +1,6 @@
 #pragma once
 
-#include <boost/noncopyable.hpp>
-#include <core/config.hpp>
 #include <functional>
-#include <glad/gl.h>
 #include <tuple>
 #include <type_traits>
 
@@ -13,6 +10,9 @@
 #include <boost/fusion/include/reverse_view.hpp>
 #include <boost/fusion/include/std_tuple.hpp>
 #include <boost/fusion/view/reverse_view.hpp>
+#include <boost/noncopyable.hpp>
+
+#include <graphics/gl/type.hpp>
 
 namespace my {
 namespace graphics {

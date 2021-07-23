@@ -3,11 +3,6 @@
 #include <boost/format.hpp>
 #include <graphics/gl/shader.hpp>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include <core/type.hpp>
-
 namespace my {
 namespace graphics {
 namespace gl {

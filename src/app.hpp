@@ -1,14 +1,11 @@
 #pragma once
 
 #include <core/type.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <graphics/gl/gl.hpp>
 #include <platform/platform.hpp>
-#include <window/window.hpp>
-
-#include <glad/gl.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include <stb_image.h>
+#include <window/window.hpp>
 
 namespace my {
 
@@ -169,23 +166,21 @@ void main()
         tex1);
 
     glViewport(0, 0, 800, 600);
+    glEnable(GL_DEPTH_TEST);
 
-    glm::mat4 model{1.0};
-    model =
-        glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    glm::mat4 view{1.0};
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     auto projection =
         glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-    win.event<ev::FramebufferSize>().subscribe([&projection](auto e) {
-      // projection = glm::perspective(glm::radians(45.0f),
-      //                               static_cast<float>(e->width / e->height),
-      //                               0.1f, 100.0f);
-      SPDLOG_DEBUG("projection: {}", glm::to_string(projection));
-    });
+    glm::vec3 from{0.0, 0.0, 10.0}, to{0.0, 0.0, 0.0};
 
-    glEnable(GL_DEPTH_TEST);
+    auto view = glm::mat4{
+        glm::quatLookAt(glm::normalize(to - from), glm::vec3{0.0, 1.0, 0.0})};
+
+    win.event<ev::FramebufferSize>().subscribe([&projection](auto e) {
+      projection = glm::perspective(glm::radians(45.0f),
+                                    static_cast<float>(e->width / e->height),
+                                    0.1f, 100.0f);
+    });
 
     while (!win.should_close()) {
 
@@ -198,21 +193,14 @@ void main()
             program.uniform("texture1", 0);
             program.uniform("texture2", 1);
 
-            for (unsigned int i = 0; i < 10; i++) {
-              // calculate the model matrix for each object and pass it to
-              // shader before drawing
-              glm::mat4 model{1.0};
-              model = glm::translate(model, cubePositions[i]);
-              float angle = 20.0f * i;
-              model = glm::rotate(model, glm::radians(angle),
-                                  glm::vec3(1.0f, 0.3f, 0.5f));
+            auto model = glm::translate(glm::mat4{1.0}, glm::vec3{0, 0, -10});
 
-              program.uniform("model", model);
-              program.uniform("view", view);
-              program.uniform("projection", projection);
+            program.uniform("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
 
-              glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
+            program.uniform("view", view);
+
+            program.uniform("projection", projection);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
             // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

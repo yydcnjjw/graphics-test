@@ -1,6 +1,5 @@
 #pragma once
 
-#include <core/type.hpp>
 #include <graphics/gl/object.hpp>
 
 namespace my {
