@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/hana.hpp>
 #include <core/event.hpp>
 
 namespace my {
@@ -21,6 +22,8 @@ struct Key : Event<Key> {
   Key(int key, int scancode, int action, int mods)
       : key(key), scancode(scancode), action(action), mods(mods) {}
 };
+
+struct Mouse : Event<Mouse> {};
 
 } // namespace ev
 } // namespace my

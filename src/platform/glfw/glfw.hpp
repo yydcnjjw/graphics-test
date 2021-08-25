@@ -27,6 +27,8 @@ public:
     if (glfwInit() == GLFW_FALSE) {
       throw std::runtime_error(err_str());
     }
+
+    // TODO: Can be prepared
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -40,7 +42,7 @@ public:
 
 private:
   static void error_cb(int error, const char *description) {
-    SPDLOG_ERROR(description);
+    SPDLOG_WARN(description);
   }
 };
 

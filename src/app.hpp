@@ -7,6 +7,11 @@
 #include <stb_image.h>
 #include <window/window.hpp>
 
+#include <backends/imgui_impl_glfw.h>
+#define IMGUI_IMPL_OPENGL_LOADER_GLAD2
+#include <backends/imgui_impl_opengl3.h>
+#include <imgui.h>
+
 namespace my {
 
 struct Image {
@@ -38,6 +43,9 @@ public:
 
   int exec() {
     SPDLOG_DEBUG("application running");
+
+    const char *glsl_version = "#version 330";
+
     platform::Window win{800, 600, "test", nullptr, nullptr};
 
     win.make_glctx();
@@ -171,10 +179,8 @@ void main()
     auto projection =
         glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-    glm::vec3 from{0.0, 0.0, 10.0}, to{0.0, 0.0, 0.0};
-
-    auto view = glm::mat4{
-        glm::quatLookAt(glm::normalize(to - from), glm::vec3{0.0, 1.0, 0.0})};
+    glm::mat4 view{1.0};
+    view = glm::translate(view, {0.0, 0.0, -5.0});
 
     win.event<ev::FramebufferSize>().subscribe([&projection](auto e) {
       projection = glm::perspective(glm::radians(45.0f),
@@ -182,7 +188,23 @@ void main()
                                     0.1f, 100.0f);
     });
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    auto io = ImGui::GetIO();
+
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(win, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+    bool show_demo_window = true;
     while (!win.should_close()) {
+      ctx.poll_events();
+
+      ImGui_ImplOpenGL3_NewFrame();
+      ImGui_ImplGlfw_NewFrame();
+
+      ImGui::NewFrame();
+      ImGui::ShowDemoWindow(&show_demo_window);
 
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
@@ -193,23 +215,27 @@ void main()
             program.uniform("texture1", 0);
             program.uniform("texture2", 1);
 
-            auto model = glm::translate(glm::mat4{1.0}, glm::vec3{0, 0, -10});
-
-            program.uniform("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            auto model = glm::translate(glm::mat4{1.0}, glm::vec3{0, 0, 0});
 
             program.uniform("view", view);
 
             program.uniform("projection", projection);
 
+            program.uniform("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+
             // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
           },
           program, va, tex0[0], tex1[1]);
 
+      ImGui::Render();
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
       win.swapbuffer();
-      ctx.poll_events();
     }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
 
     SPDLOG_DEBUG("application quit");
 

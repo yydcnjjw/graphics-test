@@ -6,7 +6,10 @@ find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 
-add_executable(graphics-test main.cc)
+add_executable(graphics-test
+  main.cc
+  ${IMGUI_BACKEND_OPENGL3_SOURCE}
+  ${IMGUI_BACKEND_GLFW_SOURCE})
 
 target_link_libraries(graphics-test
   OpenGL::GL
@@ -16,6 +19,7 @@ target_link_libraries(graphics-test
   glm
   assimp
   spdlog::spdlog
+  imgui
   )
 
 target_include_directories(graphics-test

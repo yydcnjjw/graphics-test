@@ -3,5 +3,9 @@
 #include <app.hpp>
 
 int main(int argc, char *argv[]) {
-  return my::App::run();
+  try {
+    return my::App::run();
+  } catch (std::exception &e) {
+    SPDLOG_ERROR(e.what());
+  }
 }
