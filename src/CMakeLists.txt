@@ -20,6 +20,7 @@ target_link_libraries(graphics-test
   assimp
   spdlog::spdlog
   imgui
+  dl
   )
 
 target_include_directories(graphics-test
