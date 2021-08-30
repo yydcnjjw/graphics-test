@@ -10,3 +10,6 @@
 [submodule "vendor/imgui"]
 	path = vendor/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "vendor/skia"]
+	path = vendor/skia
+	url = https://github.com/google/skia.git
