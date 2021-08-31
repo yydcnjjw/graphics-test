@@ -21,6 +21,7 @@ target_link_libraries(graphics-test
   spdlog::spdlog
   imgui
   dl
+  skia
   )
 
 target_include_directories(graphics-test

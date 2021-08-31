@@ -1,15 +1,19 @@
+# glad
 add_library(glad SHARED glad/src/gl.cc)
 target_include_directories(glad
   PUBLIC glad/include)
 
+# rxcpp
 set(RXCPP_INCLUDE_PATH ${VENDOR_SOURCE_DIR}/RxCpp/Rx/v2/src CACHE PATH "")
 
+# assimp
 set(ASSIMP_BUILD_TESTS OFF)
 add_subdirectory(assimp)
 
+# stb
 set(STB_INCLUDE_PATH ${VENDOR_SOURCE_DIR}/stb/ CACHE PATH "")
 
-
+# imgui
 set(IMGUI_DIR ${VENDOR_SOURCE_DIR}/imgui)
 set(IMGUI_CORE_SOURCE
   ${IMGUI_DIR}/imgui_demo.cpp
@@ -33,3 +37,16 @@ target_include_directories(imgui
   PUBLIC
   ${IMGUI_DIR}
   )
+
+
+# skia
+set(SKIA_DIR ${VENDOR_SOURCE_DIR}/skia)
+set(SKIA_BUILD_TYPE out/Shared)
+set(SKIA_CMAKE_DIR ${SKIA_DIR}/${SKIA_BUILD_TYPE})
+
+execute_process(
+  COMMAND python2 tools/git-sync-deps
+  COMMAND bin/gn gen ${SKIA_BUILD_TYPE} "--args=is_official_build=true is_component_build=true" --ide=json --json-ide-script=../../gn/gn_to_cmake.py
+  WORKING_DIRECTORY ${SKIA_DIR})
+
+add_subdirectory(${SKIA_CMAKE_DIR})
