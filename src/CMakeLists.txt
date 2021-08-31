@@ -6,15 +6,15 @@ find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
 
-add_executable(graphics-test
+add_executable(my-graphics
   main.cc
   ${IMGUI_BACKEND_OPENGL3_SOURCE}
   ${IMGUI_BACKEND_GLFW_SOURCE})
 
-set_property(TARGET graphics-test
+set_property(TARGET my-graphics
   PROPERTY CXX_STANDARD 20)
 
-target_link_libraries(graphics-test
+target_link_libraries(my-graphics
   OpenGL::GL
   Vulkan::Vulkan
   glfw
@@ -27,7 +27,7 @@ target_link_libraries(graphics-test
   skia
   )
 
-target_include_directories(graphics-test
+target_include_directories(my-graphics
   SYSTEM
   PRIVATE
   ${RXCPP_INCLUDE_PATH}
