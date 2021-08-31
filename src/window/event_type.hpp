@@ -58,5 +58,10 @@ struct Monitor : Event<Monitor> {
   Monitor(int event) : event(event) {}
 };
 
+struct CursorPos : Event<CursorPos> {
+  double xpos;
+  double ypos;
+  CursorPos(double xpos, double ypos) : xpos(xpos), ypos(ypos) {}
+};
 } // namespace ev
 } // namespace my

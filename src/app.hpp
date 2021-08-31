@@ -2,6 +2,7 @@
 
 #include <core/type.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <graphics/camera.hpp>
 #include <graphics/gl/gl.hpp>
 #include <imgui.hpp>
 #include <platform/platform.hpp>
@@ -173,20 +174,65 @@ void main()
     auto projection =
         glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-    glm::mat4 view{1.0};
-    view = glm::translate(view, {0.0, 0.0, -5.0});
-
     win.event<ev::FramebufferSize>().subscribe([&projection](auto e) {
       projection = glm::perspective(glm::radians(45.0f),
                                     static_cast<float>(e->width / e->height),
                                     0.1f, 100.0f);
     });
 
-    ImguiContext imgui_ctx(win);
+    graphics::Camera camera{};
 
+    win.event<ev::Key>().subscribe([&camera](auto e) {
+      SPDLOG_DEBUG("key: {}", e->key);
+
+      switch (e->key) {
+      case GLFW_KEY_W:
+        camera.move(graphics::Camera::Movement::Forward, 1);
+        break;
+      case GLFW_KEY_S:
+        camera.move(graphics::Camera::Movement::Backward, 1);
+        break;
+      case GLFW_KEY_A:
+        camera.move(graphics::Camera::Movement::Left, 1);
+        break;
+      case GLFW_KEY_D:
+        camera.move(graphics::Camera::Movement::Right, 1);
+        break;
+      }
+    });
+
+    double last_x{0}, last_y{0};
+    bool first_move{true};
+
+    win.event<ev::CursorPos>().subscribe([&](auto e) {
+      auto xpos = e->xpos;
+      auto ypos = e->ypos;
+      if (first_move) {
+        last_x = xpos;
+        last_y = ypos;
+        first_move = false;
+      }
+
+      float xoffset = (xpos - last_x) * 0.1f;
+      float yoffset = (ypos - last_y) * 0.1f;
+
+      last_x = xpos;
+      last_y = ypos;
+
+      SPDLOG_DEBUG("cursor offset: {}, {}", xoffset, yoffset);
+      
+      camera.euler_angle(xoffset, yoffset, 0.0f);
+    });
+
+    ImguiContext imgui_ctx(win);
     bool show_demo_window = true;
+
+    glm::mat4 view{1.0};
+
     while (!win.should_close()) {
       ctx.poll_events();
+
+      view = camera.look_at();
 
       imgui_ctx.clear();
       ImGui::ShowDemoWindow(&show_demo_window);
@@ -213,7 +259,7 @@ void main()
           program, va, tex0[0], tex1[1]);
 
       imgui_ctx.render();
-      
+
       win.swapbuffer();
     }
 

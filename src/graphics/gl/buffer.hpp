@@ -21,19 +21,19 @@ public:
     omap([=, this] { set_data(usage, data, size); }, *this);
   }
 
+  ~Buffer() {
+    handle_t handle{*this};
+    glDeleteBuffers(1, &handle);
+  }
+
   void set_data(Usage usage, void *data, std::size_t size) {
     glBufferData(static_cast<GLenum>(_target), size, data,
                  static_cast<GLenum>(usage));
   }
 
-  void bind() { glBindBuffer(static_cast<GLenum>(_target), *this); }
+  void bind() override { glBindBuffer(static_cast<GLenum>(_target), *this); }
 
-  void unbind() { glBindBuffer(static_cast<GLenum>(_target), 0); }
-
-  ~Buffer() {
-    handle_t handle{*this};
-    glDeleteBuffers(1, &handle);
-  }
+  void unbind() override { glBindBuffer(static_cast<GLenum>(_target), 0); }
 
 private:
   Target _target;

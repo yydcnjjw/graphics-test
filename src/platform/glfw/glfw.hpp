@@ -66,6 +66,7 @@ public:
     glfwSetMouseButtonCallback(*this, &Window::mouse_button_cb);
     glfwSetScrollCallback(*this, &Window::scroll_cb);
     glfwSetCharCallback(*this, &Window::char_cb);
+    glfwSetCursorPosCallback(*this, &Window::cursor_pos);
   }
 
   ~Window() { glfwDestroyWindow(_handle); }
@@ -112,6 +113,9 @@ private:
   }
   static void char_cb(handle_t handle, unsigned int c) {
     post_inner<ev::Char>(handle, c);
+  }
+  static void cursor_pos(handle_t handle, double xpos, double ypos) {
+    post_inner<ev::CursorPos>(handle, xpos, ypos);
   }
 };
 

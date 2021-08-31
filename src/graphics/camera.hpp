@@ -7,55 +7,48 @@
 namespace my {
 namespace graphics {
 
-// Defines several possible options for camera movement. Used as abstraction to
-// stay away from window-system specific input methods
-
-// Default camera values
-const float YAW = -90.0f;
-const float PITCH = 0.0f;
-const float SPEED = 2.5f;
-const float SENSITIVITY = 0.1f;
-const float ZOOM = 45.0f;
-
-// An abstract camera class that processes input and calculates the
-// corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 class Camera {
 public:
   enum class Movement { Forward, Backward, Left, Right };
 
-  glm::vec3 position;
-  glm::vec3 front;
-  glm::vec3 up;
+  Camera(glm::vec3 const &position = {}, glm::vec3 const &front = {0, 0, -1},
+         glm::vec3 const &up = {0, 1, 0})
+      : _position(position), _front(front), _up(up) {}
 
-  Camera() {}
-
-  glm::mat4 look_at() { return glm::lookAt(position, position + front, up); }
+  glm::mat4 look_at() {
+    return glm::lookAt(_position, _position + _front, _up);
+  }
 
   void move(Movement direction, float delta) {
     float velocity = delta;
     switch (direction) {
     case Movement::Forward: {
-      position.z += velocity;
+      _position.z -= velocity;
       break;
     }
     case Movement::Backward: {
-      position.z -= velocity;
+      _position.z += velocity;
       break;
     }
     case Movement::Left: {
-      position.x -= velocity;
+      _position.x -= velocity;
       break;
     }
     case Movement::Right: {
-      position.x += velocity;
+      _position.x += velocity;
       break;
     }
     }
   }
 
   template <typename... Args> void euler_angle(Args... args) {
-    front *= glm::eulerAngleXYZ(std::forward<Args>(args)...);
+    _front = glm::vec4(_front, 1.0) * glm::eulerAngleXYZ(std::forward<Args>(args)...);
   }
+
+private:
+  glm::vec3 _position;
+  glm::vec3 _front;
+  glm::vec3 _up;
 };
 
 } // namespace graphics
