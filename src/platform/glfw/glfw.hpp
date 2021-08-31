@@ -1,5 +1,6 @@
 #pragma once
 
+#include <core/observable.hpp>
 #include <window/event_type.hpp>
 
 #define GLFW_INCLUDE_NONE
@@ -46,7 +47,7 @@ private:
   }
 };
 
-class Window : private boost::noncopyable {
+class Window : private boost::noncopyable, public Observable {
 public:
   using handle_t = GLFWwindow *;
 
@@ -57,8 +58,14 @@ public:
     }
 
     glfwSetWindowUserPointer(*this, this);
+
     glfwSetFramebufferSizeCallback(*this, &Window::framebuffer_size_cb);
     glfwSetKeyCallback(*this, &Window::key_cb);
+    glfwSetWindowFocusCallback(*this, &Window::window_focus_cb);
+    glfwSetCursorEnterCallback(*this, &Window::cursor_enter_cb);
+    glfwSetMouseButtonCallback(*this, &Window::mouse_button_cb);
+    glfwSetScrollCallback(*this, &Window::scroll_cb);
+    glfwSetCharCallback(*this, &Window::char_cb);
   }
 
   ~Window() { glfwDestroyWindow(_handle); }
@@ -71,34 +78,40 @@ public:
 
   operator handle_t() { return _handle; }
 
-  template <typename EventType> auto event() {
-    return on_event<EventType>(_subject.get_observable());
-  }
-
 private:
   handle_t _handle;
-  rx::subjects::subject<dynamic_event_t> _subject;
-
-  template <typename EventType, typename... Args> void post(Args &&...args) {
-    post_event<EventType>(_subject.get_subscriber(),
-                          std::forward<Args>(args)...);
-  }
 
   static Window *user_pointer(handle_t handle) {
     return reinterpret_cast<Window *>(glfwGetWindowUserPointer(handle));
   }
 
   template <typename EventType, typename... Args>
-  static void post(handle_t handle, Args &&...args) {
+  static void post_inner(handle_t handle, Args &&...args) {
     user_pointer(handle)->post<EventType>(std::forward<Args>(args)...);
   }
 
   static void framebuffer_size_cb(handle_t handle, int w, int h) {
-    post<ev::FramebufferSize>(handle, w, h);
+    post_inner<ev::FramebufferSize>(handle, w, h);
   }
   static void key_cb(handle_t handle, int key, int scancode, int action,
                      int mods) {
-    post<ev::Key>(handle, key, scancode, action, mods);
+    post_inner<ev::Key>(handle, key, scancode, action, mods);
+  }
+  static void window_focus_cb(handle_t handle, int focused) {
+    post_inner<ev::WindowFocus>(handle, focused);
+  }
+  static void cursor_enter_cb(handle_t handle, int focused) {
+    post_inner<ev::WindowFocus>(handle, focused);
+  }
+  static void mouse_button_cb(handle_t handle, int button, int action,
+                              int mods) {
+    post_inner<ev::MouseButton>(handle, button, action, mods);
+  }
+  static void scroll_cb(handle_t handle, double xoffset, double yoffset) {
+    post_inner<ev::Scroll>(handle, xoffset, yoffset);
+  }
+  static void char_cb(handle_t handle, unsigned int c) {
+    post_inner<ev::Char>(handle, c);
   }
 };
 

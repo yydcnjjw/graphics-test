@@ -3,14 +3,10 @@
 #include <core/type.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <graphics/gl/gl.hpp>
+#include <imgui.hpp>
 #include <platform/platform.hpp>
 #include <stb_image.h>
 #include <window/window.hpp>
-
-#include <backends/imgui_impl_glfw.h>
-#define IMGUI_IMPL_OPENGL_LOADER_GLAD2
-#include <backends/imgui_impl_opengl3.h>
-#include <imgui.h>
 
 namespace my {
 
@@ -43,8 +39,6 @@ public:
 
   int exec() {
     SPDLOG_DEBUG("application running");
-
-    const char *glsl_version = "#version 330";
 
     platform::Window win{800, 600, "test", nullptr, nullptr};
 
@@ -188,24 +182,14 @@ void main()
                                     0.1f, 100.0f);
     });
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    auto io = ImGui::GetIO();
+    ImguiContext imgui_ctx(win);
 
-    ImGui::StyleColorsDark();
-
-    ImGui_ImplGlfw_InitForOpenGL(win, true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
     bool show_demo_window = true;
     while (!win.should_close()) {
       ctx.poll_events();
 
-      ImGui_ImplOpenGL3_NewFrame();
-      ImGui_ImplGlfw_NewFrame();
-
-      ImGui::NewFrame();
+      imgui_ctx.clear();
       ImGui::ShowDemoWindow(&show_demo_window);
-
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -228,14 +212,10 @@ void main()
           },
           program, va, tex0[0], tex1[1]);
 
-      ImGui::Render();
-      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
+      imgui_ctx.render();
+      
       win.swapbuffer();
     }
-
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
 
     SPDLOG_DEBUG("application quit");
 

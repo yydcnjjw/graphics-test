@@ -30,7 +30,6 @@ public:
   Camera() {}
 
   glm::mat4 look_at() { return glm::lookAt(position, position + front, up); }
-  
 
   void move(Movement direction, float delta) {
     float velocity = delta;
