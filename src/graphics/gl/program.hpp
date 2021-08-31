@@ -22,8 +22,8 @@ public:
     }
   }
 
-  void bind() { glUseProgram(*this); }
-  void unbind() { glUseProgram(0); }
+  void bind() override { glUseProgram(*this); }
+  void unbind() override { glUseProgram(0); }
 
   template <typename... _Shader> void attach(_Shader &&...shader) {
     static_assert(

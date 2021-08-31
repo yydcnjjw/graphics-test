@@ -15,9 +15,9 @@ public:
     glDeleteVertexArrays(1, &handle);
   }
 
-  void bind() { glBindVertexArray(*this); }
+  void bind() override { glBindVertexArray(*this); }
 
-  void unbind() { glBindVertexArray(0); }
+  void unbind() override { glBindVertexArray(0); }
 
 private:
   static handle_t gen_vertex_array() {

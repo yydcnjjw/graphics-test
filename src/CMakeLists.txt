@@ -11,6 +11,9 @@ add_executable(graphics-test
   ${IMGUI_BACKEND_OPENGL3_SOURCE}
   ${IMGUI_BACKEND_GLFW_SOURCE})
 
+set_property(TARGET graphics-test
+  PROPERTY CXX_STANDARD 20)
+
 target_link_libraries(graphics-test
   OpenGL::GL
   Vulkan::Vulkan
