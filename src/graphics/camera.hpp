@@ -54,7 +54,7 @@ private:
   glm::vec2 _viewport;
   glm::vec3 _pos;
   EulerAngule _euler_angule;
-  float _fov;
+  float _fov{45};
 
   glm::vec3 _world_up{0, 1, 0};
 };

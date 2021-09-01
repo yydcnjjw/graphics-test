@@ -171,21 +171,17 @@ void main()
     glViewport(0, 0, 800, 600);
     glEnable(GL_DEPTH_TEST);
 
-    auto projection =
-        glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
     graphics::Camera camera{{800, 600}};
     graphics::CameraController controller{win, camera};
 
     ImguiContext imgui_ctx(win);
     bool show_demo_window = true;
 
-    glm::mat4 view{1.0};
-
     while (!win.should_close()) {
       ctx.poll_events();
 
-      view = camera.look_at();
+      auto view = camera.look_at();
+      auto projection = camera.perspective();
 
       imgui_ctx.clear();
       // ImGui::ShowDemoWindow(&show_demo_window);
