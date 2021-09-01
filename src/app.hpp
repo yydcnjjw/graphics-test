@@ -15,7 +15,7 @@ struct Image {
   int width;
   int height;
   int nr_channels;
-  u_char *data;
+  uint8_t *data;
 
   ~Image() { stbi_image_free(data); }
 };

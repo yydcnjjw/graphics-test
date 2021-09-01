@@ -1,10 +1,11 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Vulkan REQUIRED)
+# find_package(Vulkan REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(assimp REQUIRED)
 
 add_executable(my-graphics
   main.cc
@@ -16,16 +17,21 @@ set_property(TARGET my-graphics
 
 target_link_libraries(my-graphics
   OpenGL::GL
-  Vulkan::Vulkan
+  # Vulkan::Vulkan
   glfw
-  glad
   glm
-  assimp
+  glad
+  assimp::assimp
   spdlog::spdlog
   imgui
-  dl
-  skia
+  ${CMAKE_DL_LIBS}
+  # skia
   )
+
+if(MINGW)
+  target_link_libraries(my-graphics
+    ssp)
+endif(MINGW)
 
 target_include_directories(my-graphics
   SYSTEM
@@ -33,3 +39,19 @@ target_include_directories(my-graphics
   ${RXCPP_INCLUDE_PATH}
   ${STB_INCLUDE_PATH}
   )
+
+if(MINGW)
+  add_custom_command(TARGET my-graphics POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:imgui>
+    $<TARGET_FILE:glad>
+    $<TARGET_FILE:spdlog::spdlog>
+    $<TARGET_FILE:assimp::assimp>
+    # $<TARGET_FILE:ssp>
+    $<TARGET_FILE_DIR:my-graphics>)
+  
+endif(MINGW)
+
+# install(TARGETS
+#   my-graphics
+#   RUNTIME_DEPENDENCY_SET test)
