@@ -34,6 +34,13 @@ target_include_directories(imgui
   ${IMGUI_DIR}
   )
 
+# assimp
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "")
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "")
+set(ASSIMP_ENABLE_BOOST_WORKAROUND OFF CACHE BOOL "")
+set(ASSIMP_ERROR_MAX ON CACHE BOOL "")
+add_subdirectory(assimp)
+
 # skia
 # set(SKIA_DIR ${VENDOR_SOURCE_DIR}/skia)
 # set(SKIA_BUILD_TYPE out/Shared-mingw)

@@ -10,3 +10,6 @@
 [submodule "vendor/skia"]
 	path = vendor/skia
 	url = https://github.com/google/skia.git
+[submodule "vendor/assimp"]
+	path = vendor/assimp
+	url = https://github.com/assimp/assimp.git

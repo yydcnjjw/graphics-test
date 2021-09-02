@@ -5,7 +5,7 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
-find_package(assimp REQUIRED)
+find_package(cairomm REQUIRED)
 
 add_executable(my-graphics
   main.cc
@@ -21,26 +21,25 @@ target_link_libraries(my-graphics
   glfw
   glm
   glad
-  assimp::assimp
+  assimp
   spdlog::spdlog
   imgui
   ${CMAKE_DL_LIBS}
+  ${cairomm_LIBRARIES}
   # skia
   )
-
-if(MINGW)
-  target_link_libraries(my-graphics
-    ssp)
-endif(MINGW)
 
 target_include_directories(my-graphics
   SYSTEM
   PRIVATE
   ${RXCPP_INCLUDE_PATH}
   ${STB_INCLUDE_PATH}
+  ${cairomm_INCLUDE_DIRS}
   )
 
 if(MINGW)
+  target_link_libraries(my-graphics
+    ssp)
   add_custom_command(TARGET my-graphics POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<TARGET_FILE:imgui>
@@ -49,9 +48,5 @@ if(MINGW)
     $<TARGET_FILE:assimp::assimp>
     # $<TARGET_FILE:ssp>
     $<TARGET_FILE_DIR:my-graphics>)
-  
+  install(TARGETS my-graphics)
 endif(MINGW)
-
-# install(TARGETS
-#   my-graphics
-#   RUNTIME_DEPENDENCY_SET test)

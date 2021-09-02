@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cairomm/cairomm.h>
 #include <core/type.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <graphics/camera.hpp>
@@ -12,10 +13,17 @@
 namespace my {
 
 struct Image {
+
+  enum class Format { Grey = 1, GreyAlpha = 2, RGB = 3, RGBAlpha = 4 };
+
   int width;
   int height;
   int nr_channels;
   uint8_t *data;
+
+  Format format() {
+    return static_cast<Format>(nr_channels);
+  }
 
   ~Image() { stbi_image_free(data); }
 };
@@ -24,7 +32,7 @@ struct ImageLoader {
   static Image load(std::string const &file) {
     Image image;
     image.data = stbi_load(file.c_str(), &image.width, &image.height,
-                           &image.nr_channels, 0);
+                           &image.nr_channels, STBI_default);
 
     if (!image.data) {
       throw std::runtime_error(
@@ -173,6 +181,8 @@ void main()
 
     graphics::Camera camera{{800, 600}};
     graphics::CameraController controller{win, camera};
+
+    Cairo::ImageSurface::create(Cairo::Format::FORMAT_ARGB32, 400, 200);
 
     ImguiContext imgui_ctx(win);
     bool show_demo_window = true;

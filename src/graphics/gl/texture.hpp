@@ -24,14 +24,14 @@ public:
 
   Texture(Target target) : Object(gen_texture()), _target(target) {}
 
-  void bind() {
+  void bind() override {
     if (_index != -1) {
       active_texture(_index);
     }
     glBindTexture(static_cast<GLenum>(_target), *this);
   }
 
-  void unbind() { glBindTexture(static_cast<GLenum>(_target), 0); }
+  void unbind() override { glBindTexture(static_cast<GLenum>(_target), 0); }
 
   Texture &operator[](int n) {
     assert(n >= 0);
@@ -78,9 +78,7 @@ private:
     return o;
   }
 
-  static void active_texture(int n) {
-    glActiveTexture(GL_TEXTURE0 + n);
-  }
+  static void active_texture(int n) { glActiveTexture(GL_TEXTURE0 + n); }
 
   void tex_parameter(GLenum name, GLint v) {
     glTexParameteri(static_cast<GLenum>(_target), name, v);
