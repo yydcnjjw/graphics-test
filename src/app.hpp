@@ -25,16 +25,19 @@ struct Image {
     return static_cast<Format>(nr_channels);
   }
 
-  ~Image() { stbi_image_free(data); }
+  ~Image() {
+    SPDLOG_DEBUG("free image");
+    stbi_image_free(data); 
+  }
 };
 
 struct ImageLoader {
-  static Image load(std::string const &file) {
-    Image image;
-    image.data = stbi_load(file.c_str(), &image.width, &image.height,
-                           &image.nr_channels, STBI_default);
+  static std::shared_ptr<Image> load(std::string const &file) {
+    auto image = std::make_shared<Image>();
+    image->data = stbi_load(file.c_str(), &image->width, &image->height,
+                           &image->nr_channels, STBI_default);
 
-    if (!image.data) {
+    if (!image->data) {
       throw std::runtime_error(
           (boost::format("load image %s failiure") % file).str());
     }
@@ -163,18 +166,16 @@ void main()
     omap(
         [&] {
           auto image = ImageLoader::load("assets/container.jpg");
-          SPDLOG_DEBUG("format {} [{}, {}]", image.format(), image.width, image.height);
-          tex0.load_image(0, GL_RGB, image.width, image.height, 0, GL_RGB,
-                          GL_UNSIGNED_BYTE, image.data);
+          tex0.load_image(0, GL_RGB, image->width, image->height, 0, GL_RGB,
+                          GL_UNSIGNED_BYTE, image->data);
         },
         tex0);
     gl::Texture tex1{gl::Texture::Target::k2D};
     omap(
         [&] {
           auto image = ImageLoader::load("assets/awesomeface.png");
-          SPDLOG_DEBUG("format {} [{}, {}]", image.format(), image.width, image.height);
-          tex1.load_image(0, GL_RGBA, image.width, image.height, 0, GL_RGBA,
-                          GL_UNSIGNED_BYTE, image.data);
+          tex1.load_image(0, GL_RGBA, image->width, image->height, 0, GL_RGBA,
+                          GL_UNSIGNED_BYTE, image->data);
         },
         tex1);
 

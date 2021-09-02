@@ -6,7 +6,7 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
-# find_package(cairomm REQUIRED)
+find_package(skia REQUIRED)
 
 add_executable(my-graphics
   main.cc
@@ -27,8 +27,7 @@ target_link_libraries(my-graphics
   spdlog::spdlog
   imgui
   ${CMAKE_DL_LIBS}
-  # ${cairomm_LIBRARIES}
-  # skia
+  skia
   )
 
 target_include_directories(my-graphics
@@ -36,19 +35,4 @@ target_include_directories(my-graphics
   PRIVATE
   ${RXCPP_INCLUDE_PATH}
   ${STB_INCLUDE_PATH}
-  # ${cairomm_INCLUDE_DIRS}
   )
-
-if(MINGW)
-  target_link_libraries(my-graphics
-    ssp)
-  add_custom_command(TARGET my-graphics POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    $<TARGET_FILE:imgui>
-    $<TARGET_FILE:glad>
-    $<TARGET_FILE:spdlog::spdlog>
-    $<TARGET_FILE:assimp::assimp>
-    # $<TARGET_FILE:ssp>
-    $<TARGET_FILE_DIR:my-graphics>)
-  install(TARGETS my-graphics)
-endif(MINGW)
