@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cairomm/cairomm.h>
+// #include <cairomm/cairomm.h>
 #include <core/type.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <graphics/camera.hpp>
@@ -14,7 +14,7 @@ namespace my {
 
 struct Image {
 
-  enum class Format { Grey = 1, GreyAlpha = 2, RGB = 3, RGBAlpha = 4 };
+  enum class Format { kGrey = 1, kGreyAlpha = 2, kRGB = 3, kRGBAlpha = 4 };
 
   int width;
   int height;
@@ -163,6 +163,7 @@ void main()
     omap(
         [&] {
           auto image = ImageLoader::load("assets/container.jpg");
+          SPDLOG_DEBUG("format {} [{}, {}]", image.format(), image.width, image.height);
           tex0.load_image(0, GL_RGB, image.width, image.height, 0, GL_RGB,
                           GL_UNSIGNED_BYTE, image.data);
         },
@@ -171,6 +172,7 @@ void main()
     omap(
         [&] {
           auto image = ImageLoader::load("assets/awesomeface.png");
+          SPDLOG_DEBUG("format {} [{}, {}]", image.format(), image.width, image.height);
           tex1.load_image(0, GL_RGBA, image.width, image.height, 0, GL_RGBA,
                           GL_UNSIGNED_BYTE, image.data);
         },
@@ -182,7 +184,7 @@ void main()
     graphics::Camera camera{{800, 600}};
     graphics::CameraController controller{win, camera};
 
-    Cairo::ImageSurface::create(Cairo::Format::FORMAT_ARGB32, 400, 200);
+    // Cairo::ImageSurface::create(Cairo::Format::FORMAT_ARGB32, 400, 200);
 
     ImguiContext imgui_ctx(win);
     bool show_demo_window = true;

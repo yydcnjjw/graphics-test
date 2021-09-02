@@ -19,9 +19,9 @@ public:
   Shader(Type type, std::vector<char const *> const &sources)
       : Object(glCreateShader(static_cast<GLenum>(type))), _type(type) {
 
-    glShaderSource(*this, sources.size(), sources.data(), nullptr);
+    glShaderSource(*this, static_cast<GLsizei>(sources.size()), sources.data(), nullptr);
     compile();
-  }
+   }
 
   ~Shader() { glDeleteShader(*this); }
 

@@ -60,7 +60,7 @@ private:
 };
 
 struct CameraController {
-  double last_x{0}, last_y{0};
+  float last_x{0}, last_y{0};
   bool first_move{true};
 
   CameraController(platform::Window &win, Camera &camera) {
@@ -85,8 +85,8 @@ struct CameraController {
     });
 
     win.event<ev::CursorPos>().subscribe([&](auto e) {
-      auto xpos = e->xpos;
-      auto ypos = e->ypos;
+      float xpos = e->xpos;
+      float ypos = e->ypos;
       if (first_move) {
         last_x = xpos;
         last_y = ypos;
@@ -112,7 +112,7 @@ struct CameraController {
     win.event<ev::Scroll>().subscribe([&camera](auto e) {
       auto fov = camera.fov();
       if (fov >= 1.0f && fov <= 45.0f)
-        fov -= e->yoffset;
+        fov -= static_cast<float>(e->yoffset);
       if (fov <= 1.0f)
         fov = 1.0f;
       if (fov >= 45.0f)

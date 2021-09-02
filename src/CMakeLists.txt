@@ -1,11 +1,12 @@
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # find_package(Vulkan REQUIRED)
+find_package(Boost REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
-find_package(cairomm REQUIRED)
+# find_package(cairomm REQUIRED)
 
 add_executable(my-graphics
   main.cc
@@ -16,16 +17,17 @@ set_property(TARGET my-graphics
   PROPERTY CXX_STANDARD 20)
 
 target_link_libraries(my-graphics
+  Boost::headers
   OpenGL::GL
   # Vulkan::Vulkan
   glfw
-  glm
+  glm::glm
   glad
   assimp
   spdlog::spdlog
   imgui
   ${CMAKE_DL_LIBS}
-  ${cairomm_LIBRARIES}
+  # ${cairomm_LIBRARIES}
   # skia
   )
 
@@ -34,7 +36,7 @@ target_include_directories(my-graphics
   PRIVATE
   ${RXCPP_INCLUDE_PATH}
   ${STB_INCLUDE_PATH}
-  ${cairomm_INCLUDE_DIRS}
+  # ${cairomm_INCLUDE_DIRS}
   )
 
 if(MINGW)

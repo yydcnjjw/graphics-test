@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/hana.hpp>
 #include <core/event.hpp>
 
 namespace my {

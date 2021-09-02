@@ -1,5 +1,5 @@
 # glad
-add_library(glad SHARED glad/src/gl.cc)
+add_library(glad glad/src/gl.cc)
 target_include_directories(glad
   PUBLIC glad/include)
 
@@ -24,7 +24,7 @@ set(IMGUI_BACKEND_OPENGL3_SOURCE
 set(IMGUI_BACKEND_GLFW_SOURCE
   ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp CACHE PATH "")
 
-add_library(imgui SHARED)
+add_library(imgui)
 target_sources(imgui
   PRIVATE
   ${IMGUI_CORE_SOURCE})
