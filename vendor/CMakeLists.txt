@@ -6,13 +6,6 @@ target_include_directories(glad
 # rxcpp
 set(RXCPP_INCLUDE_PATH ${VENDOR_SOURCE_DIR}/RxCpp/Rx/v2/src CACHE PATH "")
 
-# assimp
-# set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "")
-# set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "")
-# set(ASSIMP_ENABLE_BOOST_WORKAROUND OFF CACHE BOOL "")
-# set(ASSIMP_ERROR_MAX ON CACHE BOOL "")
-# add_subdirectory(assimp)
-
 # stb
 set(STB_INCLUDE_PATH ${VENDOR_SOURCE_DIR}/stb/ CACHE PATH "")
 
@@ -42,19 +35,19 @@ target_include_directories(imgui
   )
 
 # skia
-set(SKIA_DIR ${VENDOR_SOURCE_DIR}/skia)
-set(SKIA_BUILD_TYPE out/Shared-mingw)
-set(SKIA_CMAKE_DIR ${SKIA_DIR}/${SKIA_BUILD_TYPE})
-
-execute_process(
-  COMMAND python2 tools/git-sync-deps
-  WORKING_DIRECTORY ${SKIA_DIR})
+# set(SKIA_DIR ${VENDOR_SOURCE_DIR}/skia)
+# set(SKIA_BUILD_TYPE out/Shared-mingw)
+# set(SKIA_CMAKE_DIR ${SKIA_DIR}/${SKIA_BUILD_TYPE})
 
 # execute_process(
-#   COMMAND bin/gn gen ${SKIA_BUILD_TYPE} "--args=is_official_build=true is_component_build=true" --ide=json --json-ide-script=../../gn/gn_to_cmake.py
+#   COMMAND python2 tools/git-sync-deps
 #   WORKING_DIRECTORY ${SKIA_DIR})
-execute_process(
-  COMMAND bin/gn gen ${SKIA_BUILD_TYPE} "--args=cc=\"x86_64-w64-mingw32-gcc\" cxx=\"x86_64-w64-mingw32-g++\"" --ide=json --json-ide-script=../../gn/gn_to_cmake.py
-  WORKING_DIRECTORY ${SKIA_DIR})
 
-add_subdirectory(${SKIA_CMAKE_DIR})
+# # execute_process(
+# #   COMMAND bin/gn gen ${SKIA_BUILD_TYPE} "--args=is_official_build=true is_component_build=true" --ide=json --json-ide-script=../../gn/gn_to_cmake.py
+# #   WORKING_DIRECTORY ${SKIA_DIR})
+# execute_process(
+#   COMMAND bin/gn gen ${SKIA_BUILD_TYPE} "--args=cc=\"x86_64-w64-mingw32-gcc\" cxx=\"x86_64-w64-mingw32-g++\"" --ide=json --json-ide-script=../../gn/gn_to_cmake.py
+#   WORKING_DIRECTORY ${SKIA_DIR})
+
+# add_subdirectory(${SKIA_CMAKE_DIR})
