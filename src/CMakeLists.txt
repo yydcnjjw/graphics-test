@@ -6,7 +6,6 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 find_package(spdlog REQUIRED)
-find_package(skia REQUIRED)
 
 add_executable(my-graphics
   main.cc
@@ -21,7 +20,7 @@ target_link_libraries(my-graphics
   OpenGL::GL
   # Vulkan::Vulkan
   glfw
-  glm::glm
+  glm
   glad
   assimp
   spdlog::spdlog

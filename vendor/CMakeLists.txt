@@ -42,19 +42,20 @@ set(ASSIMP_ERROR_MAX ON CACHE BOOL "")
 add_subdirectory(assimp)
 
 # skia
-# set(SKIA_DIR ${VENDOR_SOURCE_DIR}/skia)
-# set(SKIA_BUILD_TYPE out/Shared-mingw)
-# set(SKIA_CMAKE_DIR ${SKIA_DIR}/${SKIA_BUILD_TYPE})
+if(UNIX)
+  set(SKIA_DIR ${VENDOR_SOURCE_DIR}/skia)
+  set(SKIA_BUILD_TYPE out/Shared-mingw)
+  set(SKIA_CMAKE_DIR ${SKIA_DIR}/${SKIA_BUILD_TYPE})
 
-# execute_process(
-#   COMMAND python2 tools/git-sync-deps
-#   WORKING_DIRECTORY ${SKIA_DIR})
+  execute_process(
+    COMMAND python2 tools/git-sync-deps
+    WORKING_DIRECTORY ${SKIA_DIR})
 
-# # execute_process(
-# #   COMMAND bin/gn gen ${SKIA_BUILD_TYPE} "--args=is_official_build=true is_component_build=true" --ide=json --json-ide-script=../../gn/gn_to_cmake.py
-# #   WORKING_DIRECTORY ${SKIA_DIR})
-# execute_process(
-#   COMMAND bin/gn gen ${SKIA_BUILD_TYPE} "--args=cc=\"x86_64-w64-mingw32-gcc\" cxx=\"x86_64-w64-mingw32-g++\"" --ide=json --json-ide-script=../../gn/gn_to_cmake.py
-#   WORKING_DIRECTORY ${SKIA_DIR})
+  execute_process(
+    COMMAND bin/gn gen ${SKIA_BUILD_TYPE} "--args=is_official_build=true is_component_build=true" --ide=json --json-ide-script=../../gn/gn_to_cmake.py
+    WORKING_DIRECTORY ${SKIA_DIR})
 
-# add_subdirectory(${SKIA_CMAKE_DIR})
+  add_subdirectory(${SKIA_CMAKE_DIR})
+else(WIN32)
+  find_package(skia REQUIRED)
+endif(UNIX)
