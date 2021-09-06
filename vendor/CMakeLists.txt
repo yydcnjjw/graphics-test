@@ -52,7 +52,7 @@ if(UNIX)
     WORKING_DIRECTORY ${SKIA_DIR})
 
   execute_process(
-    COMMAND bin/gn gen ${SKIA_BUILD_TYPE} "--args=is_official_build=true is_component_build=true" --ide=json --json-ide-script=../../gn/gn_to_cmake.py
+    COMMAND bin/gn gen ${SKIA_BUILD_TYPE} "--args=is_official_build=true is_component_build=true skia_use_system_freetype2=false" --ide=json --json-ide-script=../../gn/gn_to_cmake.py
     WORKING_DIRECTORY ${SKIA_DIR})
 
   add_subdirectory(${SKIA_CMAKE_DIR})
