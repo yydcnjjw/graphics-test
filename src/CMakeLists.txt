@@ -20,7 +20,6 @@ target_link_libraries(my-graphics
   OpenGL::GL
   # Vulkan::Vulkan
   glfw
-  glm
   glad
   assimp
   spdlog::spdlog
@@ -28,6 +27,12 @@ target_link_libraries(my-graphics
   ${CMAKE_DL_LIBS}
   skia
   )
+
+if(UNIX)
+  target_link_libraries(my-graphics glm)
+else(WIN32)
+  target_link_libraries(my-graphics glm::glm)
+endif(UNIX)
 
 target_include_directories(my-graphics
   SYSTEM

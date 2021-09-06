@@ -44,7 +44,7 @@ add_subdirectory(assimp)
 # skia
 if(UNIX)
   set(SKIA_DIR ${VENDOR_SOURCE_DIR}/skia)
-  set(SKIA_BUILD_TYPE out/Shared-mingw)
+  set(SKIA_BUILD_TYPE out/Shared)
   set(SKIA_CMAKE_DIR ${SKIA_DIR}/${SKIA_BUILD_TYPE})
 
   execute_process(
