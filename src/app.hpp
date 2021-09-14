@@ -9,6 +9,7 @@
 #include <platform/platform.hpp>
 #include <stb_image.h>
 #include <window/window.hpp>
+#include <canvas.hpp>
 
 namespace my {
 
@@ -185,6 +186,8 @@ void main()
     graphics::Camera camera{{800, 600}};
     graphics::CameraController controller{win, camera};
 
+    Canvas canvas{800, 600};
+    
     // Cairo::ImageSurface::create(Cairo::Format::FORMAT_ARGB32, 400, 200);
 
     ImguiContext imgui_ctx(win);
@@ -193,34 +196,36 @@ void main()
     while (!win.should_close()) {
       ctx.poll_events();
 
-      auto view = camera.look_at();
-      auto projection = camera.perspective();
+      // auto view = camera.look_at();
+      // auto projection = camera.perspective();
 
-      imgui_ctx.clear();
-      // ImGui::ShowDemoWindow(&show_demo_window);
-      glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+      // imgui_ctx.clear();
+      // // ImGui::ShowDemoWindow(&show_demo_window);
+      // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      omap(
-          [&] {
-            program.uniform("texture1", 0);
-            program.uniform("texture2", 1);
+      // omap(
+      //     [&] {
+      //       program.uniform("texture1", 0);
+      //       program.uniform("texture2", 1);
 
-            auto model = glm::translate(glm::mat4{1.0}, glm::vec3{0, 0, 0});
+      //       auto model = glm::translate(glm::mat4{1.0}, glm::vec3{0, 0, 0});
 
-            program.uniform("view", view);
+      //       program.uniform("view", view);
 
-            program.uniform("projection", projection);
+      //       program.uniform("projection", projection);
 
-            program.uniform("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+      //       program.uniform("model", model);
+      //       glDrawArrays(GL_TRIANGLES, 0, 36);
 
-            // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-          },
-          program, va, tex0[0], tex1[1]);
+      //       // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      //     },
+      //     program, va, tex0[0], tex1[1]);
 
-      imgui_ctx.render();
+      // imgui_ctx.render();
+
+      canvas.draw();
 
       win.swapbuffer();
     }

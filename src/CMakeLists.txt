@@ -34,9 +34,12 @@ else(WIN32)
   target_link_libraries(my-graphics glm::glm)
 endif(UNIX)
 
+get_target_property(SKIA_INCLUDE_PATH skia INCLUDE_DIRECTORIES)
+
 target_include_directories(my-graphics
   SYSTEM
   PRIVATE
   ${RXCPP_INCLUDE_PATH}
   ${STB_INCLUDE_PATH}
+  ${SKIA_INCLUDE_PATH}
   )
