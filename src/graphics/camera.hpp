@@ -101,7 +101,7 @@ struct CameraController {
 
       auto ea = camera.euler_angle();
       ea.yaw += xoffset;
-      ea.pitch = yoffset;
+      ea.pitch -= yoffset;
       camera.euler_angle(ea);
     });
 
